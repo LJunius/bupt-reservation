@@ -85,14 +85,14 @@ export default {
           value: 0,
           label: "羽毛球",
         },
-        {
-          value: 1,
-          label: "乒乓球",
-        },
-        {
-          value: 2,
-          label: "游泳馆",
-        },
+        // {
+        //   value: 1,
+        //   label: "乒乓球",
+        // },
+        // {
+        //   value: 2,
+        //   label: "游泳馆",
+        // },
         {
           value: 3,
           label: "健身房",
@@ -180,6 +180,7 @@ export default {
   margin-top: 20px;
   text-align: center;
 }
+
 .tt {
   margin-top: 20px;
   height: 100px;
