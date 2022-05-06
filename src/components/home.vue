@@ -43,13 +43,17 @@
     <el-button type="primary" @click="generator()" plain>确认</el-button>
   </div>
   <div>
-    请在微信中打开下链接
+    当前时间：{{now_time}}
   </div>
   <div>
+    到10点自动跳转
+  </div>
+  <div v-if="showlink">
+    <div>先在体育馆预约登录，然后在微信中打开下链接</div>
     <el-input class="tt" v-model="result" type="textarea"> </el-input>
-  </div>
-  <div>
-    <a :href="result" v-if="showlink"> 快速通道</a>
+    <div>
+      <a :href="result"> 快速通道</a>
+    </div>
   </div>
 </template>
 
@@ -72,14 +76,19 @@ export default {
       data_value: "",
       result: "",
       showlink: 0,
+      timer: null,
+      now_time: null,
     };
   },
   mounted() {
     this.init();
-    this.data_value = moment().add(1, "days").format("YYYYMMDD");
+  },
+  activated() {
+    this.init();
   },
   methods: {
     init() {
+      this.data_timer = setInterval(this.auto_jump, 100);
       this.type_options = [
         {
           value: 0,
@@ -118,33 +127,33 @@ export default {
     },
 
     generator() {
-      var len = this.time_value.length
-      if(len == 0){
+      var len = this.time_value.length;
+      if (len == 0) {
         this.$notify({
-					title: 'Warn',
-					message: '时间段不能为空',
-					type: 'warning',
-					duration: 2000
-				});
+          title: "Warn",
+          message: "时间段不能为空",
+          type: "warning",
+          duration: 2000,
+        });
         return;
       }
-      if(len > 2){
+      if (len > 2) {
         this.$notify({
-					title: 'Warn',
-					message: '时间段不能超过2个',
-					type: 'warning',
-					duration: 2000
-				});
+          title: "Warn",
+          message: "时间段不能超过2个",
+          type: "warning",
+          duration: 2000,
+        });
         return;
       }
-      this.time_value.sort()
-      if(len == 2 && this.time_value[1]-this.time_value[0] != 1){
+      this.time_value.sort();
+      if (len == 2 && this.time_value[1] - this.time_value[0] != 1) {
         this.$notify({
-					title: 'Warn',
-					message: '预约的时间段需要相邻',
-					type: 'warning',
-					duration: 2000
-				});
+          title: "Warn",
+          message: "预约的时间段需要相邻",
+          type: "warning",
+          duration: 2000,
+        });
         return;
       }
       var area_id = this.area_list[this.type_value];
@@ -163,7 +172,32 @@ export default {
         console.log("str", str);
       }
       console.log(this.result);
-      this.showlink = 1
+      this.showlink = 1;
+    },
+
+    auto_jump() {
+      this.now_time = moment().format("YYYY/MM/DD HH:mm:ss")
+      let t = moment(
+        moment().format("YYYY/MM/DD HH:mm:ss.SSS"),
+        "YYYY/MM/DD HH:mm:ss.SSS"
+      ).valueOf();
+      let target = moment()
+        .year(moment().get("year"))
+        .month(moment().get("month"))
+        .date(moment().get("date"))
+        .hour(10)
+        .minutes(0)
+        .seconds(0)
+        .format("YYYY-MM-DD HH:mm:ss");
+      target = moment(
+        moment(target).format("YYYY/MM/DD HH:mm:ss.SSS"),
+        "YYYY/MM/DD HH:mm:ss.SSS"
+      ).valueOf();
+      console.log("target", target)
+      console.log("now", t)
+      if (t > target && this.showlink == 1) {
+        window.location.href = this.result;
+      }
     },
   },
 };
@@ -178,6 +212,7 @@ export default {
 
 .el-button {
   margin-top: 20px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
